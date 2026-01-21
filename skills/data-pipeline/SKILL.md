@@ -1,282 +1,179 @@
 ---
 name: data-pipeline
-description: Data collection and management for dora-rs. Use when user asks about data recording, replay, dataset creation, or training data collection.
+description: "Use for data recording and replay questions with dora.
+Triggers on: recording, replay, lerobot, data collection, dataset, rosbag,
+record data, play back, training data, HDF5, parquet,
+数据记录, 数据回放, 数据收集, 训练数据"
+globs: ["**/dataflow.yml", "**/*.py"]
+source: "https://github.com/dora-rs/dora-lerobot"
 ---
 
-# Data Pipeline
+# Domain: Data Pipeline
 
-Data collection, storage, and replay for robot learning.
+> Recording and replaying robot data with dora-rs
 
 ## Overview
 
-Build data pipelines for training robot learning models:
+Dora supports data pipelines for:
+- Recording sensor data for training
+- Replaying recorded sessions
+- LeRobot integration for imitation learning
+- Dataset management
 
-| Stage | Purpose | Nodes |
-|-------|---------|-------|
-| Collection | Capture demonstrations | dora-record |
-| Storage | Save to dataset format | LeRobot, Parquet |
-| Replay | Playback for training | dora-replay |
-| Training | Train policies | LeRobot, RDT |
+## LeRobot Integration
 
-## Data Collection Architecture
+> **Note:** dora-lerobot is from a separate repository, not PyPI. Install from source:
+> ```bash
+> git clone https://github.com/dora-rs/dora-lerobot
+> cd dora-lerobot
+> pip install -e dora_lerobot
+> ```
+
+### Recording Data
 
 ```yaml
 nodes:
-  # Sensor inputs
+  # Camera
   - id: camera
+    build: pip install opencv-video-capture
     path: opencv-video-capture
+    inputs:
+      tick: dora/timer/millis/33
     outputs:
       - image
 
-  # Robot state
+  # Robot arm
   - id: arm
-    path: dora-piper
+    build: pip install dora-rustypot
+    path: dora-rustypot
+    inputs:
+      command: teleop/command
     outputs:
-      - jointstate
+      - state
+      - feedback
 
-  # Teleoperation
-  - id: leader
-    path: dora-piper
-    outputs:
-      - action
-
-  # Recorder
+  # LeRobot recorder (install from dora-lerobot repo first)
   - id: recorder
-    build: pip install dora-lerobot-recorder
     path: dora-lerobot-recorder
     inputs:
       image: camera/image
-      observation: arm/jointstate
-      action: leader/action
+      state: arm/state
+      action: teleop/command
     env:
-      DATASET_PATH: ./my_dataset
-      EPISODE_PREFIX: episode
+      DATASET_NAME: my_robot_dataset
+      EPISODE_INDEX: "0"
 ```
 
-## Data Formats
-
-### LeRobot Format
-
-```
-my_dataset/
-├── meta_data/
-│   └── info.json
-├── videos/
-│   └── observation.image.mp4
-└── data/
-    ├── episode_0/
-    │   ├── observation.state.parquet
-    │   └── action.parquet
-    └── episode_1/
-        └── ...
-```
-
-### Raw Parquet
-
-```
-recordings/
-├── episode_001.parquet
-├── episode_002.parquet
-└── ...
-```
-
-## Recording Workflow
-
-### 1. Setup Teleoperation
+### Replaying Data
 
 ```yaml
 nodes:
-  - id: leader
-    path: dora-piper
-    env:
-      MODE: passive
-      CAN_BUS: can0
-
-  - id: follower
-    path: dora-piper
+  # LeRobot replay (install from dora-lerobot repo first)
+  - id: replay
+    path: dora-lerobot-replay
     inputs:
-      joint_action: leader/jointstate
+      tick: dora/timer/millis/33
+    outputs:
+      - image
+      - state
+      - action
     env:
-      MODE: active
-      CAN_BUS: can1
+      DATASET_NAME: my_robot_dataset
+      EPISODE_INDEX: "0"
+
+  # Visualization
+  - id: plot
+    build: pip install dora-rerun
+    path: dora-rerun
+    inputs:
+      image: replay/image
 ```
 
-### 2. Add Camera
+## Data Collection Workflow
+
+```bash
+# 1. Start recording session
+dora run record_dataflow.yml
+
+# 2. Perform teleoperation
+# 3. Press Ctrl+C to stop and save
+
+# 4. Repeat for multiple episodes
+EPISODE_INDEX=1 dora run record_dataflow.yml
+EPISODE_INDEX=2 dora run record_dataflow.yml
+
+# 5. Train policy
+python train_policy.py --dataset my_robot_dataset
+```
+
+## Available Hub Nodes
+
+| Node | Install | Purpose |
+|------|---------|---------|
+| dora-lerobot-recorder | From [dora-lerobot](https://github.com/dora-rs/dora-lerobot) repo | Record data |
+| dora-lerobot-replay | From [dora-lerobot](https://github.com/dora-rs/dora-lerobot) repo | Replay data |
+| llama-factory-recorder | `pip install llama-factory-recorder` | Record for LLM/VLM training |
+| lerobot-dashboard | `pip install lerobot-dashboard` | Pygame recording interface |
+| dora-rdt-1b | `pip install dora-rdt-1b` | VLA policy inference |
+
+## Training Pipeline
+
+### 1. Collect Demonstrations
+
+```bash
+# Run teleoperation dataflow
+dora run record_dataflow.yml
+
+# Mark episodes
+# Press 'n' for new episode, 'f' for failed
+```
+
+### 2. Convert to LeRobot Format
+
+```python
+# The recorder automatically saves in LeRobot format
+# Dataset saved to: ~/.lerobot/datasets/<dataset_name>
+```
+
+### 3. Train Policy
+
+```bash
+# Using LeRobot CLI
+python lerobot/train.py \
+    --dataset my_robot_dataset \
+    --policy diffusion \
+    --output_dir outputs/my_policy
+```
+
+### 4. Deploy Policy
 
 ```yaml
+nodes:
   - id: camera
     path: opencv-video-capture
     inputs:
-      tick: dora/timer/millis/50
+      tick: dora/timer/millis/33
     outputs:
       - image
-```
 
-### 3. Add Recorder
-
-```yaml
-  - id: recorder
-    path: dora-lerobot-recorder
+  - id: policy
+    build: pip install dora-rdt-1b
+    path: dora-rdt-1b
     inputs:
       image: camera/image
-      observation: follower/jointstate
-      action: leader/jointstate
-    env:
-      DATASET_PATH: ./pick_and_place
-```
-
-## Replay Workflow
-
-### Load Dataset
-
-```yaml
-- id: replay
-  build: pip install dora-replay
-  path: dora-replay
-  inputs:
-    tick: dora/timer/millis/50
-  outputs:
-    - observation
-    - action
-    - image
-  env:
-    DATASET_PATH: ./pick_and_place
-    EPISODE: "0"
-    SPEED: "1.0"
-```
-
-### Execute on Robot
-
-```yaml
-nodes:
-  - id: replay
-    path: dora-replay
     outputs:
       - action
 
   - id: robot
     path: dora-piper
     inputs:
-      joint_action: replay/action
-```
-
-## Complete Recording Pipeline
-
-```yaml
-nodes:
-  # Wrist camera
-  - id: wrist_camera
-    build: pip install opencv-video-capture
-    path: opencv-video-capture
-    inputs:
-      tick: dora/timer/millis/50
-    outputs:
-      - image
-    env:
-      CAPTURE_PATH: "0"
-      IMAGE_WIDTH: "640"
-      IMAGE_HEIGHT: "480"
-
-  # External camera
-  - id: external_camera
-    build: pip install opencv-video-capture
-    path: opencv-video-capture
-    inputs:
-      tick: dora/timer/millis/50
-    outputs:
-      - image
-    env:
-      CAPTURE_PATH: "2"
-
-  # Leader arm
-  - id: leader
-    build: pip install dora-piper
-    path: dora-piper
-    inputs:
-      tick: dora/timer/millis/20
-    outputs:
-      - jointstate
-    env:
-      CAN_BUS: can0
-      MODE: passive
-
-  # Follower arm
-  - id: follower
-    build: pip install dora-piper
-    path: dora-piper
-    inputs:
-      tick: dora/timer/millis/20
-      joint_action: leader/jointstate
-    outputs:
-      - jointstate
-    env:
-      CAN_BUS: can1
-      MODE: active
-
-  # Recorder
-  - id: recorder
-    build: pip install dora-lerobot-recorder
-    path: dora-lerobot-recorder
-    inputs:
-      wrist_image: wrist_camera/image
-      external_image: external_camera/image
-      observation: follower/jointstate
-      action: leader/jointstate
-    env:
-      DATASET_PATH: ./manipulation_dataset
-      TASK_NAME: pick_and_place
-```
-
-## Episode Management
-
-```python
-# Keyboard control for episodes
-# Space: Start/stop recording
-# Enter: Save episode
-# Escape: Discard episode
-```
-
-## Data Synchronization
-
-All data is timestamped using UHLC (Unique Hybrid Logical Clock):
-
-```python
-for event in node:
-    timestamp = event["metadata"]["timestamp"]
-    # Nanosecond precision
-```
-
-## Storage Tips
-
-### Compression
-
-```yaml
-env:
-  VIDEO_CODEC: h264    # Compressed video
-  QUALITY: "23"        # CRF (lower = better quality)
-```
-
-### Downsampling
-
-```yaml
-env:
-  RECORD_HZ: "10"      # Record at 10 Hz instead of 50 Hz
-```
-
-## Quality Checks
-
-```python
-# Verify recorded data
-import pandas as pd
-
-df = pd.read_parquet("dataset/episode_0/observation.parquet")
-print(f"Samples: {len(df)}")
-print(f"Duration: {df['timestamp'].max() - df['timestamp'].min()}")
-print(f"Columns: {df.columns.tolist()}")
+      joint_positions: policy/action
 ```
 
 ## Related Skills
 
-- `recording` - Detailed recording workflow
-- `replay` - Data playback
-- `lerobot` - LeRobot integration
+- **hub-recording** - Detailed recording node documentation
+- **hub-robot** - Robot control nodes
+- **domain-robot** - Robot control patterns
+- **domain-vision** - Visual data processing
+- **hub-nodes** - All pre-built nodes

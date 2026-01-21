@@ -1,0 +1,18 @@
+# Local Claude Code settings (user-specific, not to be committed)
+.claude/settings.local.json
+.claude/settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Temporary files
+*.tmp
+*.bak

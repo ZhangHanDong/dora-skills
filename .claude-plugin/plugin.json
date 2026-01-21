@@ -1,20 +1,30 @@
 {
   "name": "dora-skills",
-  "version": "0.1.0",
-  "description": "Skills for building robotic applications with dora-rs dataflow framework. Covers node development, ML/vision pipelines, audio processing, robot control, and data collection.",
+  "version": "1.1.0",
+  "description": "Comprehensive dora-rs development assistant for building robotic dataflow applications. Covers dataflow configuration, node development (Rust/Python), ML/vision pipelines, audio processing, robot control, and data collection.",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "author": {
-    "name": "dora-rs community"
+    "name": "dora-rs",
+    "email": "dora@dora-rs.ai"
   },
   "homepage": "https://dora-rs.ai",
-  "repository": "https://github.com/dora-rs/dora",
+  "repository": "https://github.com/dora-rs/dora-skills",
   "license": "Apache-2.0",
   "keywords": [
     "dora",
+    "dora-rs",
     "robotics",
     "dataflow",
+    "robotic",
     "vision",
     "ml",
+    "yolo",
     "audio",
-    "lerobot"
+    "lerobot",
+    "arrow",
+    "shared-memory",
+    "ros2",
+    "zenoh"
   ]
 }

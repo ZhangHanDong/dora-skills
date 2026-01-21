@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "(?i)(dora|dora-rs|dataflow|DoraNode|EventStream|dora-node-api|dora-operator|dora run|dora build|dora start|dora stop|dora new|dora up|dora destroy|dataflow\\.ya?ml|nodes:|inputs:|outputs:|dora/timer|shared memory|arrow array|lerobot|dora-yolo|dora-rerun|dora-sam2|dora-cotracker|dora-qwen|dora-whisper|dora-vad|dora-microphone|dora-pyaudio|dora-kokoro|dora-piper|dora-reachy|dora-ugv|dora-rdt|opencv-video-capture|opencv-plot|pyrealsense|pyorbbecksdk|llama-factory-recorder|lerobot-dashboard|机器人|robotics|robot|视觉|vision|yolo|detection|segmentation|摄像头|camera|image|webcam|depth|传感器|sensor|arm control|chassis|actuator|speech|tts|stt|voice|audio|microphone|语音|数据流|节点|node api|operator|python node|rust node|vlm|llm|qwen|internvl|rerun|visualization|可视化|recording|imitation learning|teleoperation|translation|翻译)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== DORA SKILLS DISPLAY FORMAT ===\nWhen showing Dora Skills loaded, display:\n1. FIRST: \"🤖 Dora Skills Loaded\" text\n2. THEN: Project info\n===\n\n=== MANDATORY: DORA QUESTION ROUTING ===\n\nCRITICAL: You MUST follow the dora-router skill for ALL dora questions.\n\n## STEP 1: IDENTIFY QUESTION TYPE\n\n### Core Development\n| Question Type | Keywords | Route To |\n|---------------|----------|----------|\n| Dataflow Config | YAML, nodes, inputs, outputs, timer | dataflow-config |\n| Rust Node | DoraNode, EventStream, send_output | node-api-rust |\n| Python Node | dora.Node, event, python | node-api-python |\n| Operator | DoraOperator, on_event, register_operator | operator-api |\n| CLI Commands | dora run, dora build, dora start | cli-commands |\n\n### Hub Node Skills (Detailed)\n| Question About | Keywords | Route To |\n|----------------|----------|----------|\n| Camera/video | opencv-video-capture, realsense, orbbeck, webcam | hub-camera |\n| Audio | microphone, vad, whisper, pyaudio, kokoro-tts | hub-audio |\n| Detection/tracking | yolo, sam2, cotracker, bounding box | hub-detection |\n| Language models | qwen, vlm, llm, internvl | hub-llm |\n| Robot control | piper, reachy, ugv, kit-car, rdt-1b | hub-robot |\n| Visualization | rerun, opencv-plot, primitives | hub-visualization |\n| Recording | llama-factory-recorder, lerobot-dashboard | hub-recording |\n| Translation | opus, argotranslate | hub-translation |\n\n## STEP 2: LOAD APPROPRIATE SKILL\n\nAlways load dora-router first, then the specific hub/domain skill.\n\n==================================='"
+          }
+        ]
+      }
+    ]
+  }
+}

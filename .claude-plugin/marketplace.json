@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dora-skills",
+  "version": "1.1.0",
+  "description": "Comprehensive dora-rs development assistant for building robotic dataflow applications with ML/vision, audio processing, and robot control",
+  "owner": {
+    "name": "dora-rs",
+    "email": "dora@dora-rs.ai"
+  },
+  "plugins": [
+    {
+      "name": "dora-skills",
+      "description": "20 skills covering dataflow configuration, node development (Rust/Python), ML/vision pipelines, audio processing, robot control, and data collection for dora-rs",
+      "source": ".",
+      "category": "development"
+    }
+  ]
+}
