@@ -1,5 +1,9 @@
 # dora-skills
 
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/dora-rs/dora-skills)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
+[![Dora](https://img.shields.io/badge/dora--rs-compatible-orange.svg)](https://dora-rs.ai)
+
 [English](#english) | [中文](#chinese)
 
 ---
