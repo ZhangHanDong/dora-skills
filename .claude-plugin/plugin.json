@@ -2,8 +2,6 @@
   "name": "dora-skills",
   "version": "1.1.0",
   "description": "Comprehensive dora-rs development assistant for building robotic dataflow applications. Covers dataflow configuration, node development (Rust/Python), ML/vision pipelines, audio processing, robot control, and data collection.",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
   "author": {
     "name": "dora-rs",
     "email": "dora@dora-rs.ai"

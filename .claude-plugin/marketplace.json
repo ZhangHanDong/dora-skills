@@ -11,7 +11,7 @@
     {
       "name": "dora-skills",
       "description": "20 skills covering dataflow configuration, node development (Rust/Python), ML/vision pipelines, audio processing, robot control, and data collection for dora-rs",
-      "source": ".",
+      "source": "./",
       "category": "development"
     }
   ]

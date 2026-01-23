@@ -21,23 +21,63 @@ Dora is a high-performance dataflow framework that orchestrates AI models, senso
 
 ### Install Skills
 
-#### Claude Code (Recommended)
+#### Method 1: Marketplace (Recommended)
 
-Install directly from GitHub using the plugin marketplace:
+Install from Claude Code Plugin Marketplace in two steps:
 
 ```bash
+# Step 1: Add the marketplace
 /plugin marketplace add dora-rs/dora-skills
+
+# Step 2: Install the plugin
+/plugin install dora-skills@dora-skills
 ```
 
-#### Alternative: Clone and Add
+> **Note**: Step 1 only adds the marketplace (plugin source). Step 2 actually installs the dora-skills plugin with all features enabled.
+
+#### Method 2: NPX
+
+Install using npx:
+
+```bash
+npx skills add dora-rs/dora-skills
+```
+
+> **Note**: NPX installs skills only. For full plugin features (hooks, agents), use Method 1 or Method 3.
+
+#### Method 3: Full Plugin
+
+This method enables **all features including hooks** for automatic skill triggering.
 
 ```bash
 # Clone the repository
 git clone https://github.com/dora-rs/dora-skills.git
 
-# Add to Claude Code
-claude mcp add ./dora-skills
+# Launch with plugin directory
+claude --plugin-dir /path/to/dora-skills
 ```
+
+#### Method 4: Skills Only
+
+This method only installs skills without hooks. You need to manually invoke skills.
+
+```bash
+# Clone and copy skills
+git clone https://github.com/dora-rs/dora-skills.git
+cp -r dora-skills/skills/* ~/.claude/skills/
+```
+
+> **Note**: Without hooks, skills won't trigger automatically. You must manually call specific skills.
+
+#### Feature Comparison
+
+| Feature | Marketplace | NPX | Full Plugin | Skills Only |
+|---------|-------------|-----|-------------|-------------|
+| All 20 Skills | ✅ | ✅ | ✅ | ✅ |
+| Auto skill trigger | ✅ | ✅ | ✅ | ❌ |
+| Hook-based routing | ✅ | ✅ | ✅ | ❌ |
+| Background agents | ✅ | ✅ | ✅ | ✅ |
+| Easy updates | ✅ | ✅ | ❌ | ❌ |
 
 #### Manual Usage
 
@@ -174,23 +214,63 @@ Dora 是一个高性能数据流框架，通过声明式 YAML 管道编排 AI �
 
 ### 安装 Skills
 
-#### Claude Code (推荐)
+#### 方法 1: Marketplace (推荐)
 
-通过插件市场直接从 GitHub 安装：
+通过 Claude Code 插件市场安装，分两步：
 
 ```bash
+# 步骤 1: 添加 marketplace
 /plugin marketplace add dora-rs/dora-skills
+
+# 步骤 2: 安装插件
+/plugin install dora-skills@dora-skills
 ```
 
-#### 备选：克隆并添加
+> **说明**: 步骤 1 仅添加 marketplace（插件源）。步骤 2 才是真正安装 dora-skills 插件。
+
+#### 方法 2: NPX
+
+使用 npx 安装：
+
+```bash
+npx skills add dora-rs/dora-skills
+```
+
+> **说明**: NPX 仅安装 skills。如需完整插件功能（hooks、agents），请使用方法 1 或方法 3。
+
+#### 方法 3: 完整插件
+
+此方法启用**所有功能，包括 hooks** 自动触发。
 
 ```bash
 # 克隆仓库
 git clone https://github.com/dora-rs/dora-skills.git
 
-# 添加到 Claude Code
-claude mcp add ./dora-skills
+# 使用插件目录启动
+claude --plugin-dir /path/to/dora-skills
 ```
+
+#### 方法 4: 仅 Skills
+
+此方法仅安装 skills，不含 hooks。需要手动调用 skills。
+
+```bash
+# 克隆并复制 skills
+git clone https://github.com/dora-rs/dora-skills.git
+cp -r dora-skills/skills/* ~/.claude/skills/
+```
+
+> **说明**: 没有 hooks，skills 不会自动触发。必须手动调用特定 skill。
+
+#### 功能对比
+
+| 功能 | Marketplace | NPX | 完整插件 | 仅 Skills |
+|------|-------------|-----|----------|-----------|
+| 全部 20 个 Skills | ✅ | ✅ | ✅ | ✅ |
+| 自动触发 skill | ✅ | ✅ | ✅ | ❌ |
+| Hook 路由 | ✅ | ✅ | ✅ | ❌ |
+| 后台 agents | ✅ | ✅ | ✅ | ✅ |
+| 便捷更新 | ✅ | ✅ | ❌ | ❌ |
 
 ### 项目结构
 
