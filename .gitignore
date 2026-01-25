@@ -5,7 +5,8 @@
 # OS files
 .DS_Store
 Thumbs.db
-
+.cowork
+generated
 # Editor files
 *.swp
 *.swo
